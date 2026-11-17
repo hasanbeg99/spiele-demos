@@ -995,14 +995,14 @@ function tutAdvance(){const s=S.tut;
 function placeHand(x,y,press){hand.style.display='block';hand.style.transform=`translate(${x-21}px,${y-3}px) scale(${press?.88:1})`}
 function tutUpdate(){
  G.tutHi=null;
- if(S.tut>=TUT.length||$('#modal').style.display==='flex'){tutEl.style.display='none';hand.style.display='none';$('#toasts').style.top='';return}
+ if(S.tut>=TUT.length||$('#modal').style.display==='flex'){tutEl.style.display='none';hand.style.display='none';$('#toasts').style.top=G.wash?(L.floorY+6)+'px':'';return}
  tutAdvance();if(S.tut>=TUT.length){tutEl.style.display='none';hand.style.display='none';return}
  const st=TUT[S.tut];let txt=st.t;
  if(st.b&&!canAfford(BD[st.b].cost))txt+=' <i>(Material fehlt noch: sammeln oder auf den nächsten Waschgang warten.)</i>';
  if(S.tut===6&&G.items.some(i=>i.k==='sock'&&i.st==='floor'))txt='Neue Socken liegen herum. Einsammeln, vielleicht ist der Zwilling dabei.';
  const key=S.tut+txt;
  if(key!==tutShown){tutShown=key;tutT.innerHTML=txt+(st.ok?'<br><button class="ok" id="tutOk">Alles klar</button>':'');const ok=$('#tutOk');if(ok)ok.onclick=()=>{S.tut=99;save()}}
- tutEl.style.display=G.sheet&&!st.b?'none':'block';
+ tutEl.style.display=(G.sheet&&!st.b)||(G.wash&&S.tut!==1)?'none':'block';
  if(G.sheet){tutEl.style.top='auto';tutEl.style.bottom='auto';tutEl.style.top=(L.top+4)+'px'}
  else if(st.pos==='bottom'){tutEl.style.top='auto';tutEl.style.bottom=(H-L.trayTop+8)+'px'}else{tutEl.style.bottom='auto';tutEl.style.top=(L.top+4)+'px'}
  // Hand
@@ -1013,7 +1013,7 @@ function tutUpdate(){
  else if(st.b){if(G.sheet==='build'){const el=$('#card_'+st.b);if(el){const r=el.getBoundingClientRect();if(r.top<H-40){hx=r.left+40;hy=r.top+r.height/2}}}else if(!G.sheet&&canAfford(BD[st.b].cost)){const r=$('#bBuild').getBoundingClientRect();hx=r.left+r.width/2;hy=r.top+r.height/2}}
  else if(S.tut===5&&!G.sheet){const tu=trayUnits(),b=S.b.find(x=>x.type==='werkstatt');if(tu.length&&b&&!G.drag){const [ax,ay]=traySlotPos(0),p=bPos(b);const k=(G.t*.6)%1,e=easeIO(clamp(k*1.3,0,1));hx=lerp(ax,p.x-G.cam,e);hy=lerp(ay-20,p.y-L.bs*.4,e);press=k<.8;G.tutHi=[tu[0].id]}}
  else if(S.tut===7&&!G.sheet){const tp=twinPair();if(tp){G.tutHi=tp.map(u=>u.id);const idx=G.sel===tp[0]?1:Math.floor(G.t*.8)%2;const [x,y]=traySlotPos(trayUnits().indexOf(tp[idx]));hx=x;hy=y-20}}
- const tb=$('#toasts');if(tutEl.style.display==='block'&&tutEl.style.top!=='auto'){tb.style.top=(L.top+tutEl.offsetHeight+14)+'px'}else tb.style.top='';
+ const tb=$('#toasts');if(G.wash)tb.style.top=(L.floorY+6)+'px';else if(tutEl.style.display==='block'&&tutEl.style.top!=='auto'){tb.style.top=(L.top+tutEl.offsetHeight+14)+'px'}else tb.style.top='';
  if(hx==null||G.drag)hand.style.display='none';else placeHand(hx,hy,press);
 }
 $('#tutSkip').onclick=()=>{S.tut=99;tutEl.style.display='none';hand.style.display='none';save();toast('Tutorial übersprungen. Ein Bürgermeister weiß, was er tut.')};
